@@ -27,7 +27,6 @@ export default function LoginScreen({ navigation }) {
         try {
             setLoading(true);
             await signInWithEmailAndPassword(auth, e, password);
-            navigation.replace("Home");
         } catch (err) {
             const msg = 
                 err?.code === "auth/invalid-credential" ||

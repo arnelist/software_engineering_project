@@ -212,34 +212,34 @@ export default function BookingScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
-  headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  back: { color: "#111827", fontWeight: "600" },
-  title: { fontSize: 16, fontWeight: "800", color: "#111827" },
-  sectionTitle: { marginTop: 14, marginBottom: 8, fontWeight: "800", color: "#111827" },
-  daysRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  dayChip: {
+    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
+    headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+    back: { color: "#111827", fontWeight: "600" },
+    title: { fontSize: 16, fontWeight: "800", color: "#111827" },
+    sectionTitle: { marginTop: 14, marginBottom: 8, fontWeight: "800", color: "#111827" },
+    daysRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+    dayChip: {
     borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 999,
     paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#f9fafb",
-  },
-  dayChipActive: { backgroundColor: "#111827", borderColor: "#111827" },
-  dayChipText: { fontSize: 12, color: "#111827", fontWeight: "700" },
-  dayChipTextActive: { color: "#fff" },
-  slotRow: {
+    },
+    dayChipActive: { backgroundColor: "#111827", borderColor: "#111827" },
+    dayChipText: { fontSize: 12, color: "#111827", fontWeight: "700" },
+    dayChipTextActive: { color: "#fff" },
+    slotRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#f3f4f6",
-  },
-  slotTime: { fontWeight: "800", color: "#111827" },
-  slotMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
-  bookBtn: {
+    },
+    slotTime: { fontWeight: "800", color: "#111827" },
+    slotMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
+    bookBtn: {
     borderWidth: 1, borderColor: "#d1d5db", borderRadius: 10,
     paddingHorizontal: 12, paddingVertical: 8, backgroundColor: "#f3f4f6",
-  },
-  bookBtnDisabled: { opacity: 0.5 },
-  bookBtnText: { fontSize: 12, fontWeight: "800", color: "#111827" },
-  empty: { paddingVertical: 12, color: "#6b7280" },
+    },
+    bookBtnDisabled: { opacity: 0.5 },
+    bookBtnText: { fontSize: 12, fontWeight: "800", color: "#111827" },
+    empty: { paddingVertical: 12, color: "#6b7280" },
 });

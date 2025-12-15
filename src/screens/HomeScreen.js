@@ -71,7 +71,6 @@ export default function HomeScreen({ navigation }) {
 
     const onLogout = async () => {
         await signOut(auth);
-        navigation.replace("Login");
     };
 
     const renderTrainerRow = (trainer, gymId) => {
@@ -184,67 +183,67 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 },
-  topBar: {
+    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 },
+    topBar: {
     paddingTop: 14,
     paddingBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-  },
-  userEmail: { flex: 1, color: "#6b7280", fontSize: 12 },
-  topActions: { flexDirection: "row", gap: 8 },
-  topBtn: {
+    },
+    userEmail: { flex: 1, color: "#6b7280", fontSize: 12 },
+    topActions: { flexDirection: "row", gap: 8 },
+    topBtn: {
     borderWidth: 1,
     borderColor: "#d1d5db",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
     backgroundColor: "#f9fafb",
-  },
-  topBtnText: { fontSize: 12, color: "#111827", fontWeight: "600" },
-  pageTitle: {
+    },
+    topBtnText: { fontSize: 12, color: "#111827", fontWeight: "600" },
+    pageTitle: {
     fontSize: 22,
     fontWeight: "700",
     marginTop: 4,
     marginBottom: 12,
     color: "#111827",
-  },
-  gymCard: {
+    },
+    gymCard: {
     borderWidth: 1,
     borderColor: "#e5e7eb",
     borderRadius: 12,
     marginBottom: 12,
     overflow: "hidden",
-  },
-  gymHeader: {
+    },
+    gymHeader: {
     padding: 12,
     flexDirection: "row",
     alignItems: "center",
-  },
-  gymTitle: { fontSize: 16, fontWeight: "700", color: "#111827" },
-  gymMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
-  chevron: { fontSize: 18, color: "#6b7280", paddingLeft: 8 },
-  trainersBox: { paddingHorizontal: 12, paddingBottom: 12 },
-  trainerRow: {
+    },
+    gymTitle: { fontSize: 16, fontWeight: "700", color: "#111827" },
+    gymMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
+    chevron: { fontSize: 18, color: "#6b7280", paddingLeft: 8 },
+    trainersBox: { paddingHorizontal: 12, paddingBottom: 12 },
+    trainerRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: "#f3f4f6",
-  },
-  trainerName: { fontSize: 14, fontWeight: "700", color: "#111827" },
-  trainerSpec: { fontSize: 12, color: "#6b7280", marginTop: 2 },
-  price: { width: 50, textAlign: "right", fontWeight: "700", color: "#111827" },
-  reserveBtn: {
+    },
+    trainerName: { fontSize: 14, fontWeight: "700", color: "#111827" },
+    trainerSpec: { fontSize: 12, color: "#6b7280", marginTop: 2 },
+    price: { width: 50, textAlign: "right", fontWeight: "700", color: "#111827" },
+    reserveBtn: {
     borderWidth: 1,
     borderColor: "#d1d5db",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
     backgroundColor: "#f3f4f6",
-  },
-  reserveBtnText: { fontSize: 12, fontWeight: "700", color: "#111827" },
-  emptyText: { paddingVertical: 10, color: "#6b7280", fontSize: 12 },
+    },
+    reserveBtnText: { fontSize: 12, fontWeight: "700", color: "#111827" },
+    emptyText: { paddingVertical: 10, color: "#6b7280", fontSize: 12 },
 });

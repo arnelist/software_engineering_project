@@ -157,12 +157,12 @@ export default function ReservationsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
-  headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  back: { color: "#111827", fontWeight: "700" },
-  title: { fontSize: 16, fontWeight: "900", color: "#111827" },
-  refresh: { color: "#111827", fontWeight: "700" },
-  card: {
+    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
+    headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+    back: { color: "#111827", fontWeight: "700" },
+    title: { fontSize: 16, fontWeight: "900", color: "#111827" },
+    refresh: { color: "#111827", fontWeight: "700" },
+    card: {
     borderWidth: 1,
     borderColor: "#e5e7eb",
     borderRadius: 12,
@@ -171,17 +171,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-  },
-  time: { fontWeight: "900", color: "#111827" },
-  meta: { marginTop: 6, fontSize: 12, color: "#6b7280" },
-  cancelBtn: {
+    },
+    time: { fontWeight: "900", color: "#111827" },
+    meta: { marginTop: 6, fontSize: 12, color: "#6b7280" },
+    cancelBtn: {
     borderWidth: 1,
     borderColor: "#d1d5db",
     backgroundColor: "#f3f4f6",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
-  },
-  cancelText: { fontWeight: "900", color: "#111827", fontSize: 12 },
-  empty: { paddingVertical: 14, color: "#6b7280" },
+    },
+    cancelText: { fontWeight: "900", color: "#111827", fontSize: 12 },
+    empty: { paddingVertical: 14, color: "#6b7280" },
 });
