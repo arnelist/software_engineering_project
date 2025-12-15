@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
   },
   topBtnText: { fontSize: 12, color: "#111827", fontWeight: "600" },
-
   pageTitle: {
     fontSize: 22,
     fontWeight: "700",
@@ -211,7 +210,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     color: "#111827",
   },
-
   gymCard: {
     borderWidth: 1,
     borderColor: "#e5e7eb",
@@ -227,7 +225,6 @@ const styles = StyleSheet.create({
   gymTitle: { fontSize: 16, fontWeight: "700", color: "#111827" },
   gymMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
   chevron: { fontSize: 18, color: "#6b7280", paddingLeft: 8 },
-
   trainersBox: { paddingHorizontal: 12, paddingBottom: 12 },
   trainerRow: {
     flexDirection: "row",

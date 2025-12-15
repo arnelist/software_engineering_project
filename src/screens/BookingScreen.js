@@ -20,6 +20,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
+import { TIMESLOT_STATUS_LT } from "../constants/statuses";
 
 function formatDateYYYYMMDD(d) {
     const y = d.getFullYear();
@@ -63,8 +64,6 @@ export default function BookingScreen({ route, navigation }) {
         return formatDateYYYYMMDD(selectedDay);
     }, [selectedDay]);
 
-    //const selectedDateStr = useMemo(() => formatDateYYYYMMDD(selectedDay), [selectedDay]);
-
     const [slots, setSlots] = useState([]);
     const [loadingSlots, setLoadingSlots] = useState(true);
     const [bookingSlotId, setBookingSlotId] = useState(null);
@@ -103,7 +102,7 @@ export default function BookingScreen({ route, navigation }) {
             Alert.alert("Klaida", "Nėra prisijungusio naudotojo.");
             return;
         }
-        if (slot.status !== 'Laisva') return;
+        if (slot.status !== 'free') return;
 
         try {
             setBookingSlotId(slot.id);
@@ -113,16 +112,24 @@ export default function BookingScreen({ route, navigation }) {
                 trainerId,
                 gymId: gymId ?? null,
                 slotId: slot.id,
-                status: 'Laukiama patvirtinimo',
+
+                date: slot.date,
+                start: slot.start,
+                end: slot.end,
+
+                status: 'pending',
                 createdAt: serverTimestamp(),
             });
 
             await updateDoc(doc(db, "timeslots", slot.id) , {
-                status: 'Užimta',
+                status: 'booked',
             });
 
+            setSlots(prev => 
+                prev.map(s => (s.id === slot.id ? { ...s, status: "booked" } : s))
+            );
+
             Alert.alert("Pavyko", "Rezervacija sukurta (laukiama patvirtinimo).");
-            navigation.navigate("Reservations");
         }   catch (e) {
             console.log("BOOK ERROR: ", e);
             Alert.alert("Klaida", "Nepavyko sukurti rezervacijos.");
@@ -174,7 +181,7 @@ export default function BookingScreen({ route, navigation }) {
                         <Text style={styles.empty}>Šiai dienai laisvų laikų nėra.</Text>
                     }
                     renderItem={({ item }) => {
-                        const disabled = item.status !== 'Laisva' || bookingSlotId === item.id;
+                        const disabled = item.status !== 'free' || bookingSlotId === item.id;
                         return (
                             <View style={styles.slotRow}>
                                 <View style={{ flex: 1 }}>
@@ -182,7 +189,7 @@ export default function BookingScreen({ route, navigation }) {
                                         {item.start} - {item.end}
                                     </Text>
                                     <Text style={styles.slotMeta}>
-                                        Statusas: {item.status}
+                                        Statusas: {TIMESLOT_STATUS_LT[item.status] ?? item.status}
                                     </Text>
                                 </View>
 
@@ -209,9 +216,7 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   back: { color: "#111827", fontWeight: "600" },
   title: { fontSize: 16, fontWeight: "800", color: "#111827" },
-
   sectionTitle: { marginTop: 14, marginBottom: 8, fontWeight: "800", color: "#111827" },
-
   daysRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   dayChip: {
     borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 999,
@@ -220,7 +225,6 @@ const styles = StyleSheet.create({
   dayChipActive: { backgroundColor: "#111827", borderColor: "#111827" },
   dayChipText: { fontSize: 12, color: "#111827", fontWeight: "700" },
   dayChipTextActive: { color: "#fff" },
-
   slotRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -231,13 +235,11 @@ const styles = StyleSheet.create({
   },
   slotTime: { fontWeight: "800", color: "#111827" },
   slotMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
-
   bookBtn: {
     borderWidth: 1, borderColor: "#d1d5db", borderRadius: 10,
     paddingHorizontal: 12, paddingVertical: 8, backgroundColor: "#f3f4f6",
   },
   bookBtnDisabled: { opacity: 0.5 },
   bookBtnText: { fontSize: 12, fontWeight: "800", color: "#111827" },
-
   empty: { paddingVertical: 12, color: "#6b7280" },
 });
