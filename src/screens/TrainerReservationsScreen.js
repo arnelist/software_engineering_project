@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 import { RESERVATION_STATUS_LT } from "../constants/statuses";
 
-export default function TrainerReservationsScreen() {
+export default function TrainerReservationsScreen({ navigation }) {
     const userId = auth.currentUser?.uid;
 
     const [trainerId, setTrainerId] = useState(null);
@@ -162,22 +162,6 @@ export default function TrainerReservationsScreen() {
                 <Text numberOfLines={1} style={styles.userEmail}>
                     {auth.currentUser?.email ?? ''}
                 </Text>
-
-                <View style={styles.topActions}>
-                    <Pressable 
-                        style={styles.topBtn} 
-                        onPress={() => loadReservations(trainerId)
-                    }>
-                        <Text style={styles.topBtnText}>Atnaujinti</Text>
-                    </Pressable>
-
-                    <Pressable 
-                        style={styles.topBtn}
-                        onPress={onLogout}
-                    >
-                        <Text style={styles.topBtnText}>Atsijungti</Text>
-                    </Pressable>
-                </View>
             </View>
 
             <Text style={styles.title}>Mano rezervacijos</Text>
@@ -231,46 +215,77 @@ export default function TrainerReservationsScreen() {
                     }}
                 />
             )}
+
+            <View style={styles.footer}>
+                    <Pressable 
+                        style={styles.footerBtn} 
+                        onPress={() => loadReservations(trainerId)
+                    }>
+                        <Text style={styles.footerBtnText}>Atnaujinti</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={styles.footerBtn}
+                        onPress={() => navigation.navigate("TrainerTimeslots")}>
+                            <Text style={styles.footerBtnText}>Laikai</Text>
+                    </Pressable>
+
+                    <Pressable 
+                        style={[styles.footerBtn, styles.logoutBtn]}
+                        onPress={onLogout}
+                    >
+                        <Text style={styles.footerBtnText}>Atsijungti</Text>
+                    </Pressable>
+                </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
-    topBar: { paddingTop: 8, paddingBottom: 12, flexDirection: "row", alignItems: "center", gap: 10 },
+    topBar: { paddingTop: 30, paddingBottom: 12, flexDirection: "row", alignItems: "center", gap: 10 },
     userEmail: { flex: 1, color: "#6b7280", fontSize: 12 },
     topActions: { flexDirection: "row", gap: 8 },
-    topBtn: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: "#f9fafb",
-    },
-    topBtnText: { fontSize: 12, color: "#111827", fontWeight: "800" },
     title: { fontSize: 22, fontWeight: "900", marginTop: 4, marginBottom: 12, color: "#111827" },
     card: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
+        borderWidth: 1,
+        borderColor: "#e5e7eb",
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 10,
+        flexDirection: "row",
+        alignItems: "flex-start",
+        gap: 10,
     },
     time: { fontWeight: "900", color: "#111827" },
     meta: { marginTop: 6, fontSize: 12, color: "#6b7280" },
     actions: { gap: 8 },
     btn: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    backgroundColor: "#f3f4f6",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#d1d5db",
+        backgroundColor: "#f3f4f6",
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 10,
     },
     btnText: { fontSize: 12, fontWeight: "900", color: "#111827" },
     empty: { paddingVertical: 14, color: "#6b7280" },
+    footer: {
+        position: "absolute",
+        bottom: 30,
+        left: 16,
+        right: 16,
+        flexDirection: "row",
+        gap: 10,
+    },
+    footerBtn: {
+        flex: 1,
+        paddingVertical: 12,
+        borderRadius: 10,
+        backgroundColor: "#f3f4f6",
+        alignItems: "center",
+    },
+    logoutBtn: { backgroundColor: "#fee2e2" },
+    footerBtnText: { fontWeight: "700" },
+    logoutBtn: { backgroundColor: "#fee2e2" },
 });

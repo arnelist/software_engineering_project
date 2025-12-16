@@ -127,13 +127,19 @@ export default function ReservationsScreen({ navigation }) {
 
     return (
         <View style={styles.screen}>
-            <View style={styles.headerRow}>
-                <Pressable onPress={() => navigation.goBack()}>
-                    <Text style={styles.back}>← Atgal</Text>
+            <View style={styles.header}>
+                <Pressable 
+                    style={styles.outlineBtn}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Text style={styles.outlineBtnText}>← Atgal</Text>
                 </Pressable>
-                <Text style={styles.title}>Rezervacijos</Text>
-                <Pressable onPress={loadReservations}>
-                    <Text styl={styles.refresh}>Atnaujinti</Text>
+                <Text style={styles.headerTitle}>Rezervacijos</Text>
+                <Pressable
+                    style={styles.outlineBtn} 
+                    onPress={loadReservations}
+                >
+                    <Text style={styles.outlineBtnText}>Atnaujinti</Text>
                 </Pressable>
             </View>
 
@@ -158,29 +164,50 @@ export default function ReservationsScreen({ navigation }) {
 
 const styles = StyleSheet.create({
     screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
-    headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    back: { color: "#111827", fontWeight: "700" },
+    header: { 
+        flexDirection: "row", 
+        alignItems: "center", 
+        justifyContent: "space-between", 
+        paddingVertical: 12,
+    },
+    headerTitle: {
+        fontSize: 16,
+        fontWeight: "800",
+        color: "#111827",
+    },
+    outlineBtn: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#d1d5db",
+        backgroundColor: "#fff",
+    },
+    outlineBtnText: {
+        fontSize: 12,
+        fontWeight: "700",
+        color: "#111827",
+    },
     title: { fontSize: 16, fontWeight: "900", color: "#111827" },
-    refresh: { color: "#111827", fontWeight: "700" },
     card: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
+        borderWidth: 1,
+        borderColor: "#e5e7eb",
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
     },
     time: { fontWeight: "900", color: "#111827" },
     meta: { marginTop: 6, fontSize: 12, color: "#6b7280" },
-    cancelBtn: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    backgroundColor: "#f3f4f6",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
+        cancelBtn: {
+        borderWidth: 1,
+        borderColor: "#d1d5db",
+        backgroundColor: "#f3f4f6",
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 10,
     },
     cancelText: { fontWeight: "900", color: "#111827", fontSize: 12 },
     empty: { paddingVertical: 14, color: "#6b7280" },
