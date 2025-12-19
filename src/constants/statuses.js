@@ -7,5 +7,6 @@ export const RESERVATION_STATUS_LT = {
 
 export const TIMESLOT_STATUS_LT = {
     free: "Laisva",
-    booked: "Užimta",
+    booked: "Rezervuota",
+    expired: "Expired"
 };

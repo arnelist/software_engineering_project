@@ -19,7 +19,9 @@ import {
   serverTimestamp,
   writeBatch,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
+import { TIMESLOT_STATUS_LT } from '../constants/statuses';
 
 function pad2(n) {
     return String(n).padStart(2, '0');
@@ -34,19 +36,59 @@ function formatDateYYYYMMDD(d) {
 
 function parseHHMM(str) {
     if (!str || typeof str !== 'string') return null;
-    const m = str.match(/^(\d{1,2}):(\d{2})$/);
+
+    const s = str.trim();
+    
+    if( s === '24:00' ) return 24 * 60;
+
+    const m = s.match(/^(\d{1,2}):(\d{2})$/);
     if (!m) return null;
+
     const hh = Number(m[1]);
     const mm = Number(m[2]);
+
     if (Number.isNaN(hh) || Number.isNaN(mm)) return null;
     if (hh < 0 || hh > 23) return null;
     if (mm < 0 || mm > 59) return null;
+
     return hh * 60 + mm;
 }
 
 function minutesToHHMM(mins) {
+    if ( mins == 24 * 60 ) return '00:00+';
     const hh = Math.floor(mins / 60);
     const mm = mins % 60;
+    return `${pad2(hh)}:${pad2(mm)}`;
+}
+
+function normalizeTimeInput(raw) {
+    if ( raw == null ) return;
+
+    const digits = String(raw).replace(/[^\d]/g, '');
+
+    if ( digits.length === 0 ) return '';
+
+    if ( digits === '24' || digits === '240' || digits === '2400' ) return '00:00+';
+
+    if ( digits.length <= 2 ) {
+        const hh = Number(digits);
+        if (!Number.isFinite(hh)) return '';
+        if ( hh < 0 ) return '';
+        if ( hh == 24) return '00:00+';
+        if ( hh > 23 ) return '';
+        
+        return `${pad2(hh)}:00`;
+    }
+
+    const hh = Number(digits.slice(0, digits.length - 2));
+    const mm = Number(digits.slice(-2));
+
+    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return "";
+    if (hh < 0) return "";
+    if (hh === 24 && mm === 0) return "00:00+";
+    if (hh > 23) return "";
+    if (mm < 0 || mm > 59) return "";
+
     return `${pad2(hh)}:${pad2(mm)}`;
 }
 
@@ -71,9 +113,9 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
     const [gymId, setGymId] = useState(null);
     const [loadingTrainer, setLoadingTrainer] = useState(true);
 
-    const [startStr, setStartStr] = useState("12:00");
-    const [endStr, setEndStr] = useState("18:00");
-    const [durationMin, setDurationMin] = useState("60");
+    const [startStr, setStartStr] = useState('');
+    const [endStr, setEndStr] = useState('');
+    const [durationMin, setDurationMin] = useState('');
 
     const [loadingExisting, setLoadingExisting] = useState(true);
     const [existingSlots, setExistingSlots] = useState([]);
@@ -130,6 +172,36 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
         }
     };
 
+    const onDeleteSlot = (slot) => {
+        const canDelete = slot.status === "free" || slot.status === "expired";
+
+        if (!canDelete) {
+            Alert.alert("Negalima", "Negalima ištrinti laiko, kuris jau užimtas arba turi rezervaciją.");
+            return;
+        }
+
+        Alert.alert(
+            "Ištrinti laiką?",
+            `${slot.start} - ${slot.end}`,
+            [
+            { text: "Atšaukti", style: "cancel" },
+            {
+                text: "Ištrinti",
+                style: "destructive",
+                onPress: async () => {
+                    try {
+                        await deleteDoc(doc(db, "timeslots", slot.id));
+                        setExistingSlots((prev) => prev.filter((s) => s.id !== slot.id)); // greitas UI update
+                    } catch (e) {
+                        console.log("DELETE SLOT ERROR:", e);
+                        Alert.alert("Klaida", "Nepavyko ištrinti laiko.");
+                    }
+                },
+            },
+            ]
+        );
+    };
+
     useEffect(() => {
         loadExisting();
     }, [trainerId, selectedDateStr]);
@@ -145,8 +217,8 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
             Alert.alert("Klaida", "Laikas turi būti HH:MM formatu (pvz. 18:00).");
             return;
         }
-        if (!Number.isFinite(dur) || dur <= 0) {
-            Alert.alert("Klaida", "Trukmė turi būti teigiamas skaičius (minutėmis).");
+        if (!Number.isFinite(dur) || dur < 30) {
+            Alert.alert("Klaida", "Trukmė turi būti bent 30 minučių.");
             return;
         }
         if (endMin <= startMin) {
@@ -226,7 +298,7 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
                     return (
                         <Pressable
                             key={ds}
-                            style={[styles.dayBtnText, active && styles.dayBtnTextActive]}
+                            style={[styles.dayBtn, active && styles.dayBtnTextActive]}
                             onPress={() => setSelectedDay(d)}
                         >
                             <Text style={[styles.dayBtnText, active && styles.dayBtnTextActive]}>
@@ -241,15 +313,36 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
             <View style={styles.row}>
                 <View style={{ flex: 1 }}>
                     <Text style={styles.inputLabel}>Pradžia (HH:MM)</Text>
-                    <TextInput value={startStr} onChangeText={setStartStr} style={styles.input} />
+                    <TextInput 
+                        value={startStr} 
+                        onChangeText={setStartStr} 
+                        onBlur={() => setStartStr((v) => normalizeTimeInput(v))}
+                        style={styles.input}
+                        placeholder="12:00"
+                        keyboardType="numbers-and-punctuation" 
+                    />
                 </View>
+
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>Pabaiga (HH:MM)</Text>
+                    <TextInput 
+                        value={endStr} 
+                        onChangeText={setEndStr} 
+                        onBlur={() => setEndStr((v) => normalizeTimeInput(v))}
+                        style={styles.input}
+                        placeholder="24:00"
+                        keyboardType="numbers-and-punctuation" 
+                    />
+                </View>
+
                 <View style={{ width: 90 }}>
-                    <Text style={styles.inputLabel}>Trukmė</Text>
+                    <Text style={styles.inputLabel}>Trukmė (min.)</Text>
                     <TextInput
                         value={durationMin}
                         onChangeText={setDurationMin}
                         style={styles.input}
                         keyboardType='numeric'
+                        placeholder="30+"
                     />
                 </View>
             </View>
@@ -278,10 +371,25 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
                     ListEmptyComponent={<Text style={styles.empty}>Laikų nėra.</Text>}
                     renderItem={({ item }) => (
                         <View style={styles.slotRow}>
-                            <Text style={styles.slotTime}>
-                                {item.start} - {item.end}
-                            </Text>
-                            <Text style={styles.slotMeta}>{item.status}</Text>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.slotTime}>
+                                    {item.start} - {item.end}
+                                </Text>
+                                <Text style={styles.slotMeta}>
+                                    {TIMESLOT_STATUS_LT[item.status] ?? item.status}
+                                </Text>
+                            </View>
+
+                            <Pressable
+                                onPress={() => onDeleteSlot(item)}
+                                style={[
+                                    styles.deleteBtn,
+                                    !(item.status === 'free' || item.status === 'expired') && styles.deleteBtnDisabled,
+                                ]}
+                                disabled={!(item.status === "free" || item.status === "expired")}
+                            >
+                                <Text style={styles.deleteBtnText}>Ištrinti</Text>
+                            </Pressable>
                         </View>
                     )}
                 />
@@ -319,7 +427,7 @@ const styles = StyleSheet.create({
     },
     dayBtnActive: { backgroundColor: "#111827" },
     dayBtnText: { fontWeight: "800", color: "#111827" },
-    dayBtnTextActive: { color: "#fff" },
+    dayBtnTextActive: { color: "#ff0000ff" },
     row: { flexDirection: "row", gap: 10, alignItems: "flex-end" },
     inputLabel: { fontSize: 12, color: "#6b7280", marginBottom: 6 },
     input: {
@@ -357,4 +465,20 @@ const styles = StyleSheet.create({
     slotTime: { fontWeight: "900", color: "#111827" },
     slotMeta: { color: "#6b7280", fontWeight: "800" },
     empty: { paddingVertical: 14, color: "#6b7280" },
+    deleteBtn: {
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#fecaca",
+        backgroundColor: "#fff",
+    },
+    deleteBtnDisabled: {
+        opacity: 0.4,
+    },
+    deleteBtnText: {
+        fontWeight: "900",
+        color: "#991b1b",
+        fontSize: 12,
+    },
 });

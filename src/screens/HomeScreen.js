@@ -1,4 +1,4 @@
-import { cloneElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -103,7 +103,7 @@ export default function HomeScreen({ navigation }) {
     const renderGymCard = ({ item }) => {
         const isExpanded = expandedGymIds.has(item.id);
         const trainers = trainersByGym[item.id] || [];
-        const isLoadingTrainers = loadingTrainersGymId === item.id;
+        const isLoadingTrainers = !!loadingTrainersGymId[item.id];
 
         return (
             <View style={styles.gymCard}>

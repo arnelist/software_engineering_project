@@ -69,6 +69,12 @@ export default function BookingScreen({ route, navigation }) {
     const [bookingSlotId, setBookingSlotId] = useState(null);
 
     useEffect(() => {
+        (async () => {
+            if (!trainerId) return;
+            const changed = await expirePastFreeSlots(trainerId);
+            if (changed) console.log("Expired slots: ", changed);
+        })
+
         const loadSlots = async () => {
 
             if (!trainerId || !selectedDateStr) return;
@@ -139,6 +145,8 @@ export default function BookingScreen({ route, navigation }) {
         }
     };
 
+    const visibleSlots = slots.filter((s) => s.status !== "expired");
+
     return (
         <View style={styles.screen}>
             <View style={styles.headerRow}>
@@ -178,7 +186,7 @@ export default function BookingScreen({ route, navigation }) {
                 </View>
             )   : (
                 <FlatList
-                    data={slots}
+                    data={visibleSlots}
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={{ paddingBottom: 24 }}
                     ListEmptyComponent={
