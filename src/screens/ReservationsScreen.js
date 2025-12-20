@@ -19,6 +19,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { RESERVATION_STATUS_LT } from "../constants/statuses";
+import AnimatedScreen from "../components/AnimatedScreen";
+import colors from "../theme/colors";
 
 export default function ReservationsScreen({ navigation }) {
     const userId = auth.currentUser?.uid;
@@ -126,7 +128,7 @@ export default function ReservationsScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.screen}>
+        <AnimatedScreen style={styles.screen}>
             <View style={styles.header}>
                 <Pressable 
                     style={styles.outlineBtn}
@@ -145,7 +147,7 @@ export default function ReservationsScreen({ navigation }) {
 
             {loading ? (
                 <View style={{ paddingTop: 20 }}>
-                    <ActivityIndicator />
+                    <ActivityIndicator color={colors.accent} />
                 </View>
             )  : (
                 <FlatList
@@ -158,12 +160,12 @@ export default function ReservationsScreen({ navigation }) {
                     }
                 />
             )}
-        </View>
+        </AnimatedScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
+    screen: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingTop: 30 },
     header: { 
         flexDirection: "row", 
         alignItems: "center", 
@@ -173,42 +175,43 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 16,
         fontWeight: "800",
-        color: "#111827",
+        color: colors.text,
     },
     outlineBtn: {
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#d1d5db",
-        backgroundColor: "#fff",
+        borderColor: colors.border,
+        backgroundColor: colors.card,
     },
     outlineBtnText: {
         fontSize: 12,
         fontWeight: "700",
-        color: "#111827",
+        color: colors.accent,
     },
-    title: { fontSize: 16, fontWeight: "900", color: "#111827" },
+    title: { fontSize: 16, fontWeight: "900", color: colors.text },
     card: {
         borderWidth: 1,
-        borderColor: "#e5e7eb",
-        borderRadius: 12,
+        borderColor: colors.border,
+        backgroundColor: colors.card,
+        borderRadius: 14,
         padding: 12,
         marginBottom: 10,
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
     },
-    time: { fontWeight: "900", color: "#111827" },
-    meta: { marginTop: 6, fontSize: 12, color: "#6b7280" },
-        cancelBtn: {
+    time: { fontWeight: "900", color: colors.text },
+    meta: { marginTop: 6, fontSize: 12, color: colors.muted },
+    cancelBtn: {
         borderWidth: 1,
-        borderColor: "#d1d5db",
-        backgroundColor: "#f3f4f6",
+        borderColor: colors.accent,
+        backgroundColor: colors.accent,
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 10,
     },
-    cancelText: { fontWeight: "900", color: "#111827", fontSize: 12 },
-    empty: { paddingVertical: 14, color: "#6b7280" },
+    cancelText: { fontWeight: "900", color: "#0b0c10", fontSize: 12 },
+    empty: { paddingVertical: 14, color: colors.muted },
 });

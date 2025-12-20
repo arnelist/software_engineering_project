@@ -6,10 +6,15 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  LayoutAnimation,
+  Platform,
+  UIManager,
 } from "react-native";
 import { signOut } from "firebase/auth";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
+import AnimatedScreen from "../components/AnimatedScreen";
+import colors from "../theme/colors";
 
 export default function HomeScreen({ navigation }) {
     const userEmail = auth.currentUser?.email ?? '';
@@ -20,6 +25,16 @@ export default function HomeScreen({ navigation }) {
     const [expandedGymIds, setExpandedGymIds] = useState(() => new Set());
     const [trainersByGym, setTrainersByGym] = useState({});
     const [loadingTrainersGymId, setLoadingTrainersGymId] = useState({});
+
+    useEffect(() => {
+        if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+        }
+    }, []);
+
+    const animateLayout = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    };
 
     useEffect(() => {
         const loadGyms = async () => {
@@ -43,6 +58,7 @@ export default function HomeScreen({ navigation }) {
     }, []);
 
     const toggleGym = async (gymId) => {
+        animateLayout();
         setExpandedGymIds((prev) => {
             const next = new Set(prev);
             if (next.has(gymId)) next.delete(gymId);
@@ -127,7 +143,7 @@ export default function HomeScreen({ navigation }) {
                     <View style={styles.trainersBox}>
                         {isLoadingTrainers ? (
                             <View style={{ paddingVertical: 10 }}>
-                                <ActivityIndicator />
+                                <ActivityIndicator color={colors.accent} />
                             </View>
                         )   : trainers.length === 0 ? (
                             <Text style={styles.emptyText}>Šioje sporto salėje trenerių nėra.</Text>
@@ -141,17 +157,19 @@ export default function HomeScreen({ navigation }) {
     };
 
     const collapseAll = () => {
+        animateLayout();
         setExpandedGymIds(new Set());
     };
 
     const expandAll = async () => {
+        animateLayout();
         setExpandedGymIds(new Set(gyms.map((g) => g.id)));
 
         const missing = gyms.filter((g) => !trainersByGym[g.id]);
     }
 
     return (
-        <View style={styles.screen}>
+        <AnimatedScreen style={styles.screen}>
             <View style={styles.topBar}>
                 <Text numberOfLines={1} style={styles.userEmail}>
                     {userEmail}
@@ -172,7 +190,7 @@ export default function HomeScreen({ navigation }) {
 
             {loadingGyms ? (
                 <View style={{ paddingTop: 30 }}>
-                    <ActivityIndicator />
+                    <ActivityIndicator color={colors.accent} />
                 </View>
             )   : (
                 <FlatList
@@ -201,12 +219,12 @@ export default function HomeScreen({ navigation }) {
                     </Pressable> 
             </View>
 
-        </View>
+        </AnimatedScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 },
+    screen: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingTop: 30 },
     topBar: {
         paddingTop: 30,
         paddingBottom: 12,
@@ -214,62 +232,67 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 10,
     },
-    userEmail: { flex: 1, color: "#6b7280", fontSize: 12 },
+    userEmail: { flex: 1, color: colors.muted, fontSize: 12 },
     topBtn: {
         borderWidth: 1,
-        borderColor: "#d1d5db",
+        borderColor: colors.border,
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 8,
-        backgroundColor: "#f9fafb",
+        backgroundColor: colors.card,
     },
-    topBtnText: { fontSize: 12, color: "#111827", fontWeight: "600" },
+    topBtnText: { fontSize: 12, color: colors.text, fontWeight: "600" },
     pageTitle: {
         fontSize: 22,
-        fontWeight: "700",
+        fontWeight: "800",
         marginTop: 4,
         marginBottom: 12,
-        color: "#111827",
+        color: colors.text,
     },
     gymCard: {
         borderWidth: 1,
-        borderColor: "#e5e7eb",
-        borderRadius: 12,
+        borderColor: colors.border,
+        backgroundColor: colors.card,
+        borderRadius: 14,
         marginBottom: 12,
         overflow: "hidden",
+        shadowColor: "#000",
+        shadowOpacity: 0.35,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 8 },
     },
     gymHeader: {
-        padding: 12,
+        padding: 14,
         flexDirection: "row",
         alignItems: "center",
     },
-    gymTitle: { fontSize: 16, fontWeight: "700", color: "#111827" },
-    gymMeta: { marginTop: 4, fontSize: 12, color: "#6b7280" },
-    chevron: { fontSize: 18, color: "#6b7280", paddingLeft: 8 },
-    trainersBox: { paddingHorizontal: 12, paddingBottom: 12 },
+    gymTitle: { fontSize: 16, fontWeight: "800", color: colors.text },
+    gymMeta: { marginTop: 4, fontSize: 12, color: colors.muted },
+    chevron: { fontSize: 18, color: colors.accent, paddingLeft: 8, fontWeight: "800" },
+    trainersBox: { paddingHorizontal: 14, paddingBottom: 14, backgroundColor: colors.cardElevated },
     trainerRow: {
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
         paddingVertical: 10,
         borderTopWidth: 1,
-        borderTopColor: "#f3f4f6",
+        borderTopColor: colors.border,
     },
-    trainerName: { fontSize: 14, fontWeight: "700", color: "#111827" },
-    trainerSpec: { fontSize: 12, color: "#6b7280", marginTop: 2 },
-    price: { width: 50, textAlign: "right", fontWeight: "700", color: "#111827" },
+    trainerName: { fontSize: 14, fontWeight: "800", color: colors.text },
+    trainerSpec: { fontSize: 12, color: colors.muted, marginTop: 2 },
+    price: { width: 50, textAlign: "right", fontWeight: "800", color: colors.accent },
     reserveBtn: {
         borderWidth: 1,
-        borderColor: "#d1d5db",
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 8,
-        backgroundColor: "#f3f4f6",
+        borderColor: colors.accent,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 10,
+        backgroundColor: colors.accent,
     },
-    reserveBtnText: { fontSize: 12, fontWeight: "700", color: "#111827" },
-    emptyText: { paddingVertical: 10, color: "#6b7280", fontSize: 12 },
+    reserveBtnText: { fontSize: 12, fontWeight: "800", color: "#0b0c10" },
+    emptyText: { paddingVertical: 10, color: colors.muted, fontSize: 12 },
     footer: {
-    position: "absolute",
+        position: "absolute",
         bottom: 30,
         left: 16,
         right: 16,
@@ -279,12 +302,14 @@ const styles = StyleSheet.create({
     footerBtn: {
         flex: 1,
         paddingVertical: 12,
-        borderRadius: 10,
-        backgroundColor: "#f3f4f6",
+        borderRadius: 12,
+        backgroundColor: colors.cardElevated,
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: colors.border,
     },
-    logoutBtn: { backgroundColor: "#fee2e2" },
-    footerBtnText: { fontWeight: "700" },
+    logoutBtn: { backgroundColor: "#20141a", borderColor: "#fca5a5" },
+    footerBtnText: { fontWeight: "800", color: colors.text },
     expandRow: {
         flexDirection: "row",
         gap: 10,
@@ -292,16 +317,16 @@ const styles = StyleSheet.create({
     },
     outlineBtn: {
         flex: 1,
-        paddingVertical: 10,
+        paddingVertical: 12,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
-        backgroundColor: "#fff",
+        borderColor: colors.border,
+        backgroundColor: colors.card,
         alignItems: "center",
     },
     outlineBtnText: {
         fontSize: 12,
         fontWeight: "800",
-        color: "#111827",
+        color: colors.accent,
     },
 });

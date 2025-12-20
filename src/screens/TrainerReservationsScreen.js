@@ -20,6 +20,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { RESERVATION_STATUS_LT } from "../constants/statuses";
+import AnimatedScreen from "../components/AnimatedScreen";
+import colors from "../theme/colors";
 
 export default function TrainerReservationsScreen({ navigation }) {
     const userId = auth.currentUser?.uid;
@@ -151,13 +153,13 @@ export default function TrainerReservationsScreen({ navigation }) {
     if (loadingTrainer) {
         return (
             <View style={[styles.screen, { paddingTop: 24 }]}>
-                <ActivityIndicator />
+                <ActivityIndicator color={colors.accent} />
             </View>
         );
     }
 
     return (
-        <View style={styles.screen}>
+        <AnimatedScreen style={styles.screen}>
             <View style={styles.topBar}>
                 <Text numberOfLines={1} style={styles.userEmail}>
                     {auth.currentUser?.email ?? ''}
@@ -168,7 +170,7 @@ export default function TrainerReservationsScreen({ navigation }) {
 
             {loading ? (
                 <View style={{ paddingTop: 24 }}>
-                    <ActivityIndicator />
+                    <ActivityIndicator color={colors.accent} />
                 </View>
             )   : (
                 <FlatList
@@ -224,10 +226,10 @@ export default function TrainerReservationsScreen({ navigation }) {
                         <Text style={styles.footerBtnText}>Atnaujinti</Text>
                     </Pressable>
 
-                    <Pressable
-                        style={styles.footerBtn}
-                        onPress={() => navigation.navigate("TrainerTimeslots")}>
-                            <Text style={styles.footerBtnText}>Laikai</Text>
+                <Pressable
+                    style={styles.footerBtn}
+                    onPress={() => navigation.navigate("TrainerTimeslots")}>
+                        <Text style={styles.footerBtnText}>Laikai</Text>
                     </Pressable>
 
                     <Pressable 
@@ -237,39 +239,40 @@ export default function TrainerReservationsScreen({ navigation }) {
                         <Text style={styles.footerBtnText}>Atsijungti</Text>
                     </Pressable>
                 </View>
-        </View>
+        </AnimatedScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
+    screen: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingTop: 12 },
     topBar: { paddingTop: 30, paddingBottom: 12, flexDirection: "row", alignItems: "center", gap: 10 },
-    userEmail: { flex: 1, color: "#6b7280", fontSize: 12 },
+    userEmail: { flex: 1, color: colors.muted, fontSize: 12 },
     topActions: { flexDirection: "row", gap: 8 },
-    title: { fontSize: 22, fontWeight: "900", marginTop: 4, marginBottom: 12, color: "#111827" },
+    title: { fontSize: 22, fontWeight: "900", marginTop: 4, marginBottom: 12, color: colors.text },
     card: {
         borderWidth: 1,
-        borderColor: "#e5e7eb",
-        borderRadius: 12,
+        borderColor: colors.border,
+        backgroundColor: colors.card,
+        borderRadius: 14,
         padding: 12,
         marginBottom: 10,
         flexDirection: "row",
         alignItems: "flex-start",
         gap: 10,
     },
-    time: { fontWeight: "900", color: "#111827" },
-    meta: { marginTop: 6, fontSize: 12, color: "#6b7280" },
+    time: { fontWeight: "900", color: colors.text },
+    meta: { marginTop: 6, fontSize: 12, color: colors.muted },
     actions: { gap: 8 },
     btn: {
         borderWidth: 1,
-        borderColor: "#d1d5db",
-        backgroundColor: "#f3f4f6",
+        borderColor: colors.accent,
+        backgroundColor: colors.accent,
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 10,
     },
-    btnText: { fontSize: 12, fontWeight: "900", color: "#111827" },
-    empty: { paddingVertical: 14, color: "#6b7280" },
+    btnText: { fontSize: 12, fontWeight: "900", color: "#0b0c10" },
+    empty: { paddingVertical: 14, color: colors.muted },
     footer: {
         position: "absolute",
         bottom: 30,
@@ -281,11 +284,12 @@ const styles = StyleSheet.create({
     footerBtn: {
         flex: 1,
         paddingVertical: 12,
-        borderRadius: 10,
-        backgroundColor: "#f3f4f6",
+        borderRadius: 12,
+        backgroundColor: colors.cardElevated,
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: colors.border,
     },
-    logoutBtn: { backgroundColor: "#fee2e2" },
-    footerBtnText: { fontWeight: "700" },
-    logoutBtn: { backgroundColor: "#fee2e2" },
+    logoutBtn: { backgroundColor: "#20141a", borderColor: "#fca5a5" },
+    footerBtnText: { fontWeight: "800", color: colors.text },
 });

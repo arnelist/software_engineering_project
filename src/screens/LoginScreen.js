@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../services/firebase";
+import AnimatedScreen from "../components/AnimatedScreen";
+import colors from "../theme/colors";
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
@@ -45,7 +47,7 @@ export default function LoginScreen({ navigation }) {
             style={styles.screen}
             behavior={Platform.OS === 'ios' ? "padding" : undefined}
         >
-            <View style={styles.container}>
+            <AnimatedScreen style={styles.container}>
                 <Text style={styles.title}>CoachBooking</Text>
                 <Text style={styles.subtitle}>Rezervuokis trenerį be vargo</Text>
 
@@ -89,7 +91,7 @@ export default function LoginScreen({ navigation }) {
                         </Text>
                     </Pressable>
                 </View>
-            </View>
+            </AnimatedScreen>
         </KeyboardAvoidingView>
     );
 }
@@ -97,7 +99,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.bg,
   },
   container: {
     flex: 1,
@@ -107,13 +109,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 6,
     fontSize: 14,
-    color: "#6b7280",
+    color: colors.muted,
     textAlign: "center",
   },
   form: {
@@ -122,38 +124,43 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: colors.border,
+    backgroundColor: colors.inputBg,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    color: "#111827",
+    color: colors.text,
   },
   button: {
     marginTop: 6,
     borderWidth: 1,
-    borderColor: "#d1d5db",
-    backgroundColor: "#f3f4f6",
+    borderColor: colors.accent,
+    backgroundColor: colors.accent,
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: "center",
+    shadowColor: colors.accent,
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
   },
   buttonPressed: {
-    opacity: 0.7,
+    opacity: 0.8,
   },
   buttonText: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#111827",
+    fontWeight: "800",
+    color: "#0b0c10",
   },
   link: {
     marginTop: 10,
     textAlign: "center",
-    color: "#6b7280",
+    color: colors.muted,
     fontSize: 13,
   },
   linkStrong: {
-    color: "#111827",
-    fontWeight: "600",
+    color: colors.accent,
+    fontWeight: "700",
   },
 });

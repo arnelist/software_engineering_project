@@ -22,6 +22,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { TIMESLOT_STATUS_LT } from '../constants/statuses';
+import AnimatedScreen from "../components/AnimatedScreen";
+import colors from "../theme/colors";
 
 function pad2(n) {
     return String(n).padStart(2, '0');
@@ -68,7 +70,7 @@ function normalizeTimeInput(raw) {
 
     if ( digits.length === 0 ) return '';
 
-    if ( digits === '24' || digits === '240' || digits === '2400' ) return '00:00+';
+    if ( digits === '24' || digits === '240' || digits === '2400' ) return '24:00';
 
     if ( digits.length <= 2 ) {
         const hh = Number(digits);
@@ -273,13 +275,13 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
     if (loadingTrainer) {
         return (
             <View style={[styles.screen, { paddingTop: 24 }]}>
-                <ActivityIndicator />
+                <ActivityIndicator color={colors.accent} />
             </View>
         );
     }
 
     return (
-        <View style={styles.screen}>
+        <AnimatedScreen style={styles.screen}>
             <View style={styles.headerRow}>
                 <Pressable 
                     style={styles.outlineBtn}
@@ -362,7 +364,7 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
 
             {loadingExisting ? (
                 <View style={{ paddingTop: 14}}>
-                    <ActivityIndicator />
+                    <ActivityIndicator color={colors.accent} />
                 </View>
             )   : (
                 <FlatList
@@ -394,49 +396,51 @@ export default function TrainerTimeslotCreatorScreen({ navigation }) {
                     )}
                 />
             )}
-        </View>
+        </AnimatedScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16, paddingTop: 12 },
+    screen: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingTop: 12 },
     headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 30 },
     outlineBtn: {
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#d1d5db",
-        backgroundColor: "#fff",
+        borderColor: colors.border,
+        backgroundColor: colors.card,
     },
     outlineBtnText: {
         fontSize: 12,
-        fontWeight: "700",
-        color: "#111827",
+        fontWeight: "800",
+        color: colors.accent,
     },
-    title: { fontSize: 16, fontWeight: "900", color: "#111827" },
-    label: { marginTop: 14, marginBottom: 8, fontWeight: "900", color: "#111827" },
+    title: { fontSize: 16, fontWeight: "900", color: colors.text },
+    label: { marginTop: 14, marginBottom: 8, fontWeight: "900", color: colors.text },
     daysRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: 'center' },
     dayBtn: {
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: colors.border,
         borderRadius: 10,
         paddingHorizontal: 10,
         paddingVertical: 8,
-        backgroundColor: "#fff",
+        backgroundColor: colors.card,
     },
-    dayBtnActive: { backgroundColor: "#111827" },
-    dayBtnText: { fontWeight: "800", color: "#111827" },
-    dayBtnTextActive: { color: "#ff0000ff" },
+    dayBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+    dayBtnText: { fontWeight: "800", color: colors.text },
+    dayBtnTextActive: { color: "#0b0c10" },
     row: { flexDirection: "row", gap: 10, alignItems: "flex-end" },
-    inputLabel: { fontSize: 12, color: "#6b7280", marginBottom: 6 },
+    inputLabel: { fontSize: 12, color: colors.muted, marginBottom: 6 },
     input: {
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: colors.border,
         borderRadius: 10,
         paddingHorizontal: 10,
         paddingVertical: 8,
         fontWeight: "800",
+        backgroundColor: colors.inputBg,
+        color: colors.text,
     },
     primaryBtn: {
         marginTop: 14,
@@ -444,9 +448,15 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         alignItems: "center",
         justifyContent: 'center',
-        backgroundColor: "#000000ff",
+        backgroundColor: colors.accent,
+        borderWidth: 1,
+        borderColor: colors.accent,
+        shadowColor: colors.accent,
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 6 },
     },
-    primaryBtnText: { color: "#ffffffff", fontWeight: "700", fontSize: 14 },
+    primaryBtnText: { color: "#0b0c10", fontWeight: "800", fontSize: 14 },
     sectionHeader: { 
         flexDirection: "row", 
         justifyContent: "space-between",
@@ -454,24 +464,24 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         paddingTop: 15
     },
-    refresh: { fontWeight: "900", color: "#111827" },
+    refresh: { fontWeight: "900", color: colors.text },
     slotRow: {
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: "#f3f4f6",
+        borderBottomColor: colors.border,
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    slotTime: { fontWeight: "900", color: "#111827" },
-    slotMeta: { color: "#6b7280", fontWeight: "800" },
-    empty: { paddingVertical: 14, color: "#6b7280" },
+    slotTime: { fontWeight: "900", color: colors.text },
+    slotMeta: { color: colors.muted, fontWeight: "800" },
+    empty: { paddingVertical: 14, color: colors.muted },
     deleteBtn: {
         paddingHorizontal: 10,
         paddingVertical: 8,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: "#fecaca",
-        backgroundColor: "#fff",
+        backgroundColor: colors.card,
     },
     deleteBtnDisabled: {
         opacity: 0.4,

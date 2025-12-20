@@ -16,6 +16,10 @@ import TrainerReservationsScreen from "../screens/TrainerReservationsScreen";
 import TrainerTimeslotCreatorScreen from "../screens/TrainerTimeslotCreatorScreen";
 
 const Stack = createNativeStackNavigator();
+const stackScreenOptions = {
+    headerShown: false,
+    animation: "fade_from_bottom",
+};
 
 function Loading() {
     return (
@@ -27,7 +31,7 @@ function Loading() {
 
 function AuthStack() {
   return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={stackScreenOptions}>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
         </Stack.Navigator>
@@ -36,7 +40,7 @@ function AuthStack() {
 
 function ClientStack() {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={stackScreenOptions}>
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Booking" component={BookingScreen} />
             <Stack.Screen name="Reservations" component={ReservationsScreen} />
@@ -46,7 +50,7 @@ function ClientStack() {
 
 function TrainerStack() {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={stackScreenOptions}>
             <Stack.Screen 
                 name="TrainerHome"
                 component={TrainerReservationsScreen}
