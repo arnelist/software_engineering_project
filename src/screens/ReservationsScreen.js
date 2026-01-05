@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  Alert,
+    View,
+    Text,
+    Pressable,
+    StyleSheet,
+    FlatList,
+    ActivityIndicator,
+    Alert,
 } from "react-native";
 import { auth, db } from "../services/firebase";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  doc,
-  updateDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    doc,
+    updateDoc,
 } from "firebase/firestore";
 import { RESERVATION_STATUS_LT } from "../constants/statuses";
 import AnimatedScreen from "../components/AnimatedScreen";
@@ -38,7 +38,8 @@ export default function ReservationsScreen({ navigation }) {
             const q = query(
                 collection(db, "reservations"),
                 where("userId", "==", userId),
-                orderBy("createdAt", "asc"),
+                orderBy("date", "desc"),
+                orderBy("start", "desc")
             );
 
             const snap = await getDocs(q);
@@ -109,7 +110,15 @@ export default function ReservationsScreen({ navigation }) {
                     <Text style={styles.time}>
                         {item.date ?? '-'} • {item.start ?? "--:--"}–{item.end ?? "--:--"}
                     </Text>
-                    <Text style={styles.meta}>Statusas: {statusLt}</Text>
+                    <View style={styles.statusRow}>
+                        <Text style={styles.meta}>Statusas: {statusLt}</Text>
+
+                        {item.status === "checkedIn" && (
+                            <View style={styles.badgeSuccess}>
+                                <Text style={styles.badgeText}>✅ Atvykta</Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
 
                 {canCancel && (
@@ -144,6 +153,13 @@ export default function ReservationsScreen({ navigation }) {
                     <Text style={styles.outlineBtnText}>Atnaujinti</Text>
                 </Pressable>
             </View>
+
+            <Pressable
+            style={styles.scanBtn}
+            onPress={() => navigation.navigate("QrScanner")}
+            >
+                <Text style={styles.scanBtnText}>Skenuoti QR (check-in)</Text>
+            </Pressable>
 
             {loading ? (
                 <View style={{ paddingTop: 20 }}>
@@ -214,4 +230,37 @@ const styles = StyleSheet.create({
     },
     cancelText: { fontWeight: "900", color: "#0b0c10", fontSize: 12 },
     empty: { paddingVertical: 14, color: colors.muted },
+    scanBtn: {
+        marginTop: 12,
+        marginBottom: 10,
+        backgroundColor: colors.cardElevated,
+        paddingVertical: 12,
+        borderRadius: 14,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
+    scanBtnText: {
+        color: colors.text,
+        fontWeight: "800",
+    },
+    statusRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 10,
+    },
+    badgeSuccess: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.cardElevated,
+    },
+    badgeText: {
+        color: colors.text,
+        fontWeight: "900",
+        fontSize: 12,
+    },
 });

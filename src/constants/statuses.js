@@ -3,6 +3,7 @@ export const RESERVATION_STATUS_LT = {
   confirmed: "Patvirtinta",
   rejected: "Atmesta",
   cancelled: "Atšaukta",
+  checkedIn: "Atvykta (checked-in)",
 };
 
 export const TIMESLOT_STATUS_LT = {

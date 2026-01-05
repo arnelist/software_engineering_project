@@ -14,6 +14,7 @@ import BookingScreen from "../screens/BookingScreen";
 import ReservationsScreen from "../screens/ReservationsScreen";
 import TrainerReservationsScreen from "../screens/TrainerReservationsScreen";
 import TrainerTimeslotCreatorScreen from "../screens/TrainerTimeslotCreatorScreen";
+import QrScannerScreen from "../screens/QrScannerScreen";
 
 const Stack = createNativeStackNavigator();
 const stackScreenOptions = {
@@ -44,6 +45,11 @@ function ClientStack() {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Booking" component={BookingScreen} />
             <Stack.Screen name="Reservations" component={ReservationsScreen} />
+            <Stack.Screen
+                name="QrScanner"
+                component={QrScannerScreen}
+                options={{ title: "QR Check-in" }}
+            />
         </Stack.Navigator>
     );
 }

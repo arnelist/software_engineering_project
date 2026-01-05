@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  Alert,
+    View,
+    Text,
+    Pressable,
+    StyleSheet,
+    FlatList,
+    ActivityIndicator,
+    Alert,
 } from "react-native";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../services/firebase";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  doc,
-  updateDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    doc,
+    updateDoc,
 } from "firebase/firestore";
 import { RESERVATION_STATUS_LT } from "../constants/statuses";
 import AnimatedScreen from "../components/AnimatedScreen";
 import colors from "../theme/colors";
+import { Modal } from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import { buildCheckinQrValue } from "../utils/qr";
 
 export default function TrainerReservationsScreen({ navigation }) {
     const userId = auth.currentUser?.uid;
@@ -32,6 +35,7 @@ export default function TrainerReservationsScreen({ navigation }) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState(null);
+    const [qrReservation, setQrReservation] = useState(null);
 
     useEffect(() => {
         const loadTrainer = async() => {
@@ -173,49 +177,95 @@ export default function TrainerReservationsScreen({ navigation }) {
                     <ActivityIndicator color={colors.accent} />
                 </View>
             )   : (
-                <FlatList
-                    data={items}
-                    keyExtractor={(i) => i.id}
-                    contentContainerStyle={{ paddingBottom: 24 }}
-                    ListEmptyComponent={
-                        <Text style={styles.empty}>Rezervacijų nėra.</Text>
-                    }
-                    renderItem={({ item }) => {
-                        const isBusy = processingId === item.id;
-                        const statusLt = RESERVATION_STATUS_LT[item.status] ?? item.status;   
+                <>
+                    <FlatList
+                        data={items}
+                        keyExtractor={(i) => i.id}
+                        contentContainerStyle={{ paddingBottom: 24 }}
+                        ListEmptyComponent={
+                            <Text style={styles.empty}>Rezervacijų nėra.</Text>
+                        }
+                        renderItem={({ item }) => {
+                            const isBusy = processingId === item.id;
+                            const statusLt = RESERVATION_STATUS_LT[item.status] ?? item.status;   
+                        
+                            return (
+                                <View style={styles.card}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.time}>
+                                            {item.date ?? "-"} • {item.start ?? "--:--"}–{item.end ?? "--:--"}
+                                        </Text>
+                                        <View style={styles.statusRow}>
+                                            <Text style={styles.meta}>Statusas: {statusLt}</Text>
                     
-                        return (
-                            <View style={styles.card}>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={styles.time}>
-                                        {item.date ?? "-"} • {item.start ?? "--:--"}–{item.end ?? "--:--"}
-                                    </Text>
-                                    <Text style={styles.meta}>Statusas: {statusLt}</Text>
-                                </View>
-
-                                {item.status === "pending" && (
-                                    <View style={styles.actions}>
-                                        <Pressable
-                                            disabled={isBusy}
-                                            style={[styles.btn, isBusy && { opacity: 0.6 }]}
-                                            onPress={() => confirmReservation(item)}
-                                        >
-                                            <Text style={styles.btnText}>Patvirtinti</Text>
-                                        </Pressable>
-
-                                        <Pressable
-                                            disabled={isBusy}
-                                            style={[styles.btn, isBusy && { opacity: 0.6 }]}
-                                            onPress={() => rejectReservation(item)}
-                                        >
-                                            <Text style={styles.btnText}>Atmesti</Text>
-                                        </Pressable>
+                                            {item.status === "checkedIn" && (
+                                                <View style={styles.badgeSuccess}>
+                                                    <Text style={[styles.badgeSuccess, { marginLeft: 10}]}>✅ Atvyko</Text>
+                                                </View>
+                                            )}
+                                        </View>
                                     </View>
-                                )}
+
+                                    {item.status === "pending" && (
+                                        <View style={styles.actions}>
+                                            <Pressable
+                                                disabled={isBusy}
+                                                style={[styles.btn, isBusy && { opacity: 0.6 }]}
+                                                onPress={() => confirmReservation(item)}
+                                            >
+                                                <Text style={styles.btnText}>Patvirtinti</Text>
+                                            </Pressable>
+
+                                            <Pressable
+                                                disabled={isBusy}
+                                                style={[styles.btn, isBusy && { opacity: 0.6 }]}
+                                                onPress={() => rejectReservation(item)}
+                                            >
+                                                <Text style={styles.btnText}>Atmesti</Text>
+                                            </Pressable>
+                                        </View>
+                                    )}
+
+                                    {item.status === "confirmed" && (
+                                        <Pressable
+                                            style={[styles.btn, { marginLeft: 10 }]}
+                                            onPress={() => setQrReservation(item)}
+                                        >
+                                            <Text style={styles.btnText}>Rodyti QR</Text>
+                                        </Pressable>
+                                    )}
+                                </View>
+                            );
+                        }}
+                    />
+
+                    <Modal
+                        visible={!!qrReservation}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setQrReservation(null)}
+                        >
+                        <View style={styles.modalBackdrop}>
+                            <View style={styles.modalCard}>
+                            <Text style={styles.modalTitle}>Check-in QR</Text>
+
+                            {qrReservation && (
+                                <View style={{ padding: 12, backgroundColor: "white", borderRadius: 12 }}>
+                                <QRCode value={buildCheckinQrValue(qrReservation.id)} size={220} />
+                                </View>
+                            )}
+
+                            <Text style={styles.modalHint}>
+                                Klientas nuskenuoja šitą QR savo programėlėje.
+                            </Text>
+
+                            <Pressable style={[styles.footerBtn, { width: "100%", marginTop: 12 }]} onPress={() => setQrReservation(null)}>
+                                <Text style={styles.footerBtnText}>Uždaryti</Text>
+                            </Pressable>
                             </View>
-                        );
-                    }}
-                />
+                        </View>
+                    </Modal>
+                </>
             )}
 
             <View style={styles.footer}>
@@ -292,4 +342,51 @@ const styles = StyleSheet.create({
     },
     logoutBtn: { backgroundColor: "#20141a", borderColor: "#fca5a5" },
     footerBtnText: { fontWeight: "800", color: colors.text },
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+    },
+    modalCard: {
+        width: "100%",
+        maxWidth: 420,
+        backgroundColor: colors.card,
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: colors.border,
+        padding: 16,
+        alignItems: "center",
+    },
+    modalTitle: {
+        color: colors.text,
+        fontSize: 18,
+        fontWeight: "900",
+        marginBottom: 12,
+    },
+    modalHint: {
+        color: colors.muted,
+        marginTop: 10,
+        textAlign: "center",
+    },
+    statusRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 10,
+    },
+    badgeSuccess: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.cardElevated,
+    },
+    badgeText: {
+        color: colors.text,
+        fontWeight: "900",
+        fontSize: 12,
+    },
 });
